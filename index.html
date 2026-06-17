@@ -1037,6 +1037,8 @@
 </div>
 
 <script>
+    const RSVP_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxqZhGuad71Qqn_yDAuEU2JBhe5pL6HiOzMn-iLrnqmI5Myz8_MiHxJJqpDb9LbTHum/exec';
+
     function setupScrollAnimations() {
         const revealTargets = document.querySelectorAll('.section-inner, .calendar-container, .timeline-item, .footer-avatar, .stick-figures');
         revealTargets.forEach((item) => item.classList.add('reveal'));
@@ -1087,6 +1089,41 @@
         }
     }
 
+    function getSlugFromUrl() {
+        const rawParam = window.location.search.slice(1);
+        if (!rawParam) return '';
+
+        try {
+            return decodeURIComponent(rawParam).trim();
+        } catch (e) {
+            return rawParam.trim();
+        }
+    }
+
+    async function sendRsvp(attendance) {
+        if (!RSVP_ENDPOINT || RSVP_ENDPOINT.includes('PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE')) {
+            throw new Error('RSVP endpoint is not configured');
+        }
+
+        const heroHeading = document.querySelector('.hero-h');
+        const payload = {
+            hero_h: heroHeading ? heroHeading.textContent.trim() : '',
+            attendance,
+            slug: getSlugFromUrl(),
+            page_url: window.location.href
+        };
+
+        const response = await fetch(RSVP_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to submit RSVP');
+        }
+    }
+
     function updateCountdown() {
         const weddingDate = new Date('August 2, 2026 11:00:00').getTime();
         const now = Date.now();
@@ -1114,10 +1151,19 @@
     updateCountdown();
     setInterval(updateCountdown, 1000);
 
-    function selectRsvp(button) {
+    async function selectRsvp(button) {
         document.querySelectorAll('.btn-outline').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
-        alert('Спасибо за ваш ответ: «' + button.innerText + '»');
+
+        const answerText = button.innerText.toLowerCase();
+        const attendance = answerText.includes('не получится') ? 'не будет' : 'будет';
+
+        try {
+            await sendRsvp(attendance);
+            alert('Спасибо! Ваш ответ отправлен: «' + button.innerText + '»');
+        } catch (e) {
+            alert('Ответ сохранен на странице, но не отправлен в таблицу. Проверьте RSVP_ENDPOINT.');
+        }
     }
 </script>
 
