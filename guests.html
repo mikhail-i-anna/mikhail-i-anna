@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список гостей | Михаил и Анна</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f9f6f1;
+            --primary-color: #8b9474;
+            --primary-dark: #6d7559;
+            --text-dark: #3a3a3a;
+            --text-muted: #7a7a72;
+            --white: #ffffff;
+            --success: #7a8b67;
+            --danger: #b07a7a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 28px 16px 32px;
+        }
+
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.86);
+            border: 1px solid rgba(139, 148, 116, 0.15);
+            border-radius: 18px;
+            padding: 24px 18px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            text-align: center;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-size: 0.92rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .stat {
+            background: var(--white);
+            border: 1px solid rgba(139, 148, 116, 0.2);
+            border-radius: 12px;
+            padding: 10px 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.7rem;
+            color: var(--primary-dark);
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            margin-top: 4px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+
+        .input,
+        .select {
+            border: 1px solid rgba(139, 148, 116, 0.35);
+            border-radius: 10px;
+            background: var(--white);
+            color: var(--text-dark);
+            padding: 10px 12px;
+            min-height: 42px;
+            font-size: 0.9rem;
+        }
+
+        .input {
+            min-width: 260px;
+        }
+
+        .list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid rgba(139, 148, 116, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            margin-bottom: 6px;
+        }
+
+        .row {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            line-height: 1.45;
+        }
+
+        .badge {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .badge.yes {
+            background: rgba(122, 139, 103, 0.14);
+            color: var(--success);
+        }
+
+        .badge.no {
+            background: rgba(176, 122, 122, 0.14);
+            color: var(--danger);
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 28px 8px;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 16px;
+        }
+
+        .auth-box {
+            width: min(420px, 100%);
+            background: var(--white);
+            border-radius: 16px;
+            padding: 22px 18px;
+            text-align: center;
+            border: 1px solid rgba(139, 148, 116, 0.2);
+        }
+
+        .auth-title {
+            font-family: 'Great Vibes', cursive;
+            color: var(--primary-dark);
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+
+        .auth-help {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .auth-input {
+            width: 100%;
+            border: 1px solid rgba(139, 148, 116, 0.35);
+            border-radius: 10px;
+            padding: 11px 12px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            margin-top: 10px;
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            padding: 11px 12px;
+            background: var(--primary-color);
+            color: var(--white);
+            cursor: pointer;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Список гостей</h1>
+        <p class="subtitle">Страница RSVP с фильтрами по присутствию</p>
+
+        <div class="stats">
+            <div class="stat"><div class="stat-value" id="totalCount">0</div><div class="stat-label">Всего ответов</div></div>
+            <div class="stat"><div class="stat-value" id="yesCount">0</div><div class="stat-label">Будут</div></div>
+            <div class="stat"><div class="stat-value" id="noCount">0</div><div class="stat-label">Не будут</div></div>
+        </div>
+
+        <div class="controls">
+            <input class="input" id="searchInput" type="search" placeholder="Поиск по обращению или slug">
+            <select class="select" id="attendanceFilter">
+                <option value="all">Все</option>
+                <option value="yes">Только будут</option>
+                <option value="no">Только не будут</option>
+            </select>
+        </div>
+
+        <div id="list" class="list"></div>
+    </div>
+
+    <div class="overlay" id="authOverlay">
+        <div class="auth-box">
+            <div class="auth-title">Доступ</div>
+            <div class="auth-help">Введите пароль: текущее число месяца</div>
+            <input id="passwordInput" class="auth-input" type="password" inputmode="numeric" placeholder="Например, 17">
+            <button id="unlockBtn" class="btn">Открыть список</button>
+        </div>
+    </div>
+
+    <script>
+        // 1) Вставьте ID таблицы (между /d/ и /edit)
+        const SPREADSHEET_ID = 'teo_6RVViSGBbp4cL6e98DDjfJnR7F_ZNZoMDgFgE';
+        // 2) При необходимости укажите имя листа (например "Лист1"), либо оставьте пустым
+        const SHEET_NAME = 'Лист1';
+
+        let allRows = [];
+
+        function getTodayPassword() {
+            return String(new Date().getDate());
+        }
+
+        function parseGviz(text) {
+            const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]+)\);?/);
+            if (!match) throw new Error('Неверный ответ от Google');
+            return JSON.parse(match[1]);
+        }
+
+        function buildGvizUrl() {
+            if (!SPREADSHEET_ID || SPREADSHEET_ID.includes('PASTE_SPREADSHEET_ID_HERE')) {
+                throw new Error('Не настроен SPREADSHEET_ID в guests.html');
+            }
+            const base = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
+            return SHEET_NAME ? `${base}&sheet=${encodeURIComponent(SHEET_NAME)}` : base;
+        }
+
+        function normalizeRows(rows, cols) {
+            return rows.map((row) => {
+                const getVal = (key) => {
+                    const idx = cols.findIndex((c) => (c.label || '').trim().toLowerCase() === key);
+                    return idx >= 0 && row.c[idx] && row.c[idx].v != null ? String(row.c[idx].v) : '';
+                };
+
+                const attendanceRaw = getVal('attendance').toLowerCase();
+                const attendance = attendanceRaw.includes('не') ? 'no' : 'yes';
+
+                return {
+                    timestamp: getVal('timestamp'),
+                    hero_h: getVal('hero_h'),
+                    attendance,
+                    attendanceText: attendance === 'yes' ? 'Будут' : 'Не будут',
+                    slug: getVal('slug'),
+                    pageUrl: getVal('page_url')
+                };
+            });
+        }
+
+        function updateStats(rows) {
+            const total = rows.length;
+            const yes = rows.filter((r) => r.attendance === 'yes').length;
+            const no = total - yes;
+
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('yesCount').textContent = yes;
+            document.getElementById('noCount').textContent = no;
+        }
+
+        function renderList(rows) {
+            const list = document.getElementById('list');
+            list.innerHTML = '';
+
+            if (!rows.length) {
+                list.innerHTML = '<div class="empty">Записей по фильтру нет</div>';
+                return;
+            }
+
+            rows.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="name">${item.hero_h || 'Без имени'}</div>
+                    <div class="row">Slug: ${item.slug || '—'}</div>
+                    <div class="row">Дата: ${item.timestamp || '—'}</div>
+                    <span class="badge ${item.attendance}">${item.attendanceText}</span>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function applyFilters() {
+            const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+            const mode = document.getElementById('attendanceFilter').value;
+
+            const filtered = allRows.filter((row) => {
+                const hay = `${row.hero_h} ${row.slug}`.toLowerCase();
+                if (q && !hay.includes(q)) return false;
+                if (mode === 'yes') return row.attendance === 'yes';
+                if (mode === 'no') return row.attendance === 'no';
+                return true;
+            });
+
+            updateStats(filtered);
+            renderList(filtered);
+        }
+
+        async function loadData() {
+            const res = await fetch(buildGvizUrl());
+            const text = await res.text();
+            const json = parseGviz(text);
+            allRows = normalizeRows(json.table.rows || [], json.table.cols || []);
+            applyFilters();
+        }
+
+        function tryUnlock() {
+            const entered = document.getElementById('passwordInput').value.trim();
+            const expected = getTodayPassword();
+            if (entered !== expected) {
+                alert('Неверный пароль');
+                return;
+            }
+
+            document.getElementById('authOverlay').style.display = 'none';
+            loadData().catch((err) => {
+                alert('Ошибка загрузки данных: ' + err.message);
+            });
+        }
+
+        document.getElementById('unlockBtn').addEventListener('click', tryUnlock);
+        document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') tryUnlock();
+        });
+
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('attendanceFilter').addEventListener('change', applyFilters);
+    </script>
+</body>
+</html>
