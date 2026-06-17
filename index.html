@@ -186,7 +186,7 @@
             position: relative;
         }
 
-        .hero-date {
+        .hero-h {
             font-size: 1.2rem;
             letter-spacing: 3px;
             color: var(--primary-color);
@@ -804,7 +804,7 @@
         </div>
         <div class="hero-content">
             <span class="decorative-yes">yes</span>
-            <div class="hero-date">Дорогая / Дорогой</div>
+            <div class="hero-h">Дорогая / Дорогой</div>
             <div class="invitation-text">
                
                 приглашаем Вас / тебя разделить яркие мгновения и радостные улыбки в день нашей свадьбы!
@@ -1056,6 +1056,37 @@
         revealTargets.forEach((item) => observer.observe(item));
     }
 
+    async function applyPersonalText() {
+        try {
+            const rawParam = window.location.search.slice(1);
+            if (!rawParam) return;
+
+            const key = decodeURIComponent(rawParam).trim();
+            if (!key) return;
+
+            const response = await fetch('text.json', { cache: 'no-store' });
+            if (!response.ok) return;
+
+            const data = await response.json();
+            if (!Array.isArray(data)) return;
+
+            const entry = data.find(item => item.name === key);
+            if (!entry) return;
+
+            const heroHeading = document.querySelector('.hero-h');
+            const invitationText = document.querySelector('.invitation-text');
+
+            if (heroHeading && entry.greeting) {
+                heroHeading.textContent = entry.greeting;
+            }
+            if (invitationText && entry.message) {
+                invitationText.textContent = entry.message;
+            }
+        } catch (e) {
+            // Тихо игнорируем, если что-то пошло не так — останется базовый текст
+        }
+    }
+
     function updateCountdown() {
         const weddingDate = new Date('August 2, 2026 11:00:00').getTime();
         const now = Date.now();
@@ -1079,6 +1110,7 @@
     }
 
     setupScrollAnimations();
+    applyPersonalText();
     updateCountdown();
     setInterval(updateCountdown, 1000);
 
